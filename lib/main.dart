@@ -24,7 +24,18 @@ class ActionsList extends StatefulWidget {
 
 class ActionsListState extends State<ActionsList> {
   final suggestions = <WordPair>[];
+  final saved = new Set<WordPair>();
   final biggerFont = const TextStyle(fontSize: 18.0);
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('Actions List'),
+      ),
+      body: buildSuggestions(),
+    );
+  }
 
   Widget buildSuggestions() {
     return new ListView.builder(
@@ -43,20 +54,26 @@ class ActionsListState extends State<ActionsList> {
   }
 
   Widget buildRow(WordPair words) {
-    return new ListTile(
-        title: new Text(
-      words.asPascalCase,
-      style: biggerFont,
-    ));
-  }
+    final previouslySaved = saved.contains(words);
 
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Actions List'),
+    return new ListTile(
+      title: new Text(
+        words.asPascalCase,
+        style: biggerFont,
       ),
-      body: buildSuggestions(),
+      trailing: new Icon(
+        previouslySaved ? Icons.favorite : Icons.favorite_border,
+        color: previouslySaved ? Colors.red : null,
+      ),
+      onTap: () {
+        setState(() {
+          if (previouslySaved) {
+            saved.remove(words);
+          } else {
+            saved.add(words);
+          }
+        });
+      },
     );
   }
 }
